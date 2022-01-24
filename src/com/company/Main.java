@@ -20,14 +20,14 @@ public class Main {
     public static void printStatus(PriorityQueue<Task> ready, Task running, int time) {
 
         System.out.println("State at t = " + time);
-        System.out.println("Ready Queue: [");
+        System.out.println("\033[0;1m" + "Ready Queue: [");
         for(Task t : ready) {
             System.out.println(String.format("    Task {name: %s, type: %s, state: %s, timeWithCpu: %d, duration: %d}",
                     t.getName(), t.getType(), t.getState(), t.getTimeWithCPU(), t.getDuration()));
         }
-        System.out.println("]");
-        System.out.println("Running Task:");
-        System.out.println(ANSI_GREEN + String.format("    Task {name: %s, type: %s, state: %s, timeWithCpu: %d, duration: %d}",
+        System.out.println("\033[0;1m" + "]");
+        System.out.println("\033[0;1m" + "Running Task:");
+        System.out.println(ANSI_BLUE + String.format("    Task {name: %s, type: %s, state: %s, timeWithCpu: %d, duration: %d}",
                 running.getName(), running.getType(), running.getState(), running.getTimeWithCPU(), running.getDuration())
                 + ANSI_RESET);
         System.out.println("===");
@@ -119,6 +119,54 @@ public class Main {
         }
     }
 
+    public static PriorityQueue<Task> recalculate(PriorityQueue<Task> old, final int t) {
+        PriorityQueue<Task> ready = new PriorityQueue<Task>(100, new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                double x1 = (t + o1.getDuration()) * 1.0 / o1.getDuration();
+                double x2 = (t + o2.getDuration()) * 1.0 / o2.getDuration();
+                return Double.compare(x1, x2);
+            }
+        });
+
+        ready.addAll(old);
+
+        return ready;
+    }
+
+    public static void hrrn(Task[] tasks) {
+        int newOrder = tasks.length;
+
+        PriorityQueue<Task> ready = new PriorityQueue<Task>(tasks.length, new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                // Waiting time = 0
+                // baraye hame (0+BT) / BT = 1
+                return o1.getOrder() - o2.getOrder();
+            }
+        });
+
+        int t = 0;
+        ready.addAll(Arrays.asList(tasks));
+
+        while(!ready.isEmpty()) {
+            Task task = ready.poll();
+            task.setState(Task.RUNNING);
+            int initialDuration = task.getDuration();
+            while(task.getDuration() != 0) {
+                task.setDuration(task.getDuration()-1);
+                task.setTimeWithCPU(task.getTimeWithCPU()+1);
+                printStatus(ready, task, t);
+                t += 1;
+            }
+
+            task.setState(Task.TERMINATED);
+
+            ready = recalculate(ready, t);
+        }
+    }
+
+
     public static void main(String[] args) {
         System.out.println("OS Scheduling project, Student# 9822762211");
         System.out.println("How many tasks?");
@@ -135,6 +183,7 @@ public class Main {
         }
 //        sjf(tasks);
 //        fcfs(tasks);
-        roundRobin(tasks, 1);
+//        roundRobin(tasks, 1);
+        hrrn(tasks);
     }
 }
