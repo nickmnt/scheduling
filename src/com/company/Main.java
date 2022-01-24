@@ -46,6 +46,30 @@ public class Main {
         }
     }
 
+    public static void fcfs(Task[] tasks) {
+        PriorityQueue<Task> ready = new PriorityQueue<Task>(tasks.length, new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                return o1.getOrder() - o2.getOrder();
+            }
+        });
+
+        ready.addAll(Arrays.asList(tasks));
+
+        int t = 0;
+
+        while(!ready.isEmpty()) {
+            Task task = ready.poll();
+            task.setState(Task.RUNNING);
+            while(task.getDuration() != 0) {
+                task.setDuration(task.getDuration()-1);
+                printStatus(ready, task, t);
+                t += 1;
+            }
+            task.setState(Task.TERMINATED);
+        }
+    }
+
     public static void main(String[] args) {
         System.out.println("OS Scheduling project, Student# 9822762211");
         System.out.println("How many tasks?");
@@ -58,8 +82,9 @@ public class Main {
 //            System.out.println("Enter task " + (i+1) + ":");
             String input1 = sc.nextLine();
             String[] splittedInput = input1.split(" ");
-            tasks[i] = new Task(splittedInput[0], splittedInput[1], Integer.parseInt(splittedInput[2]));
+            tasks[i] = new Task(splittedInput[0], splittedInput[1], Integer.parseInt(splittedInput[2]), i);
         }
 //        sjf(tasks);
+        fcfs(tasks);
     }
 }

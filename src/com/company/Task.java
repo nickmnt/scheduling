@@ -9,11 +9,19 @@ public class Task {
     private String type;
     private int duration;
     private String state = READY;
+    private int order;
 
     public Task(String name, String type, int duration) {
         this.name = name;
         this.type = type;
         this.duration = duration;
+    }
+
+    public Task(String name, String type, int duration, int order) {
+        this.name = name;
+        this.type = type;
+        this.duration = duration;
+        this.order = order;
     }
 
     public String getName() {
@@ -46,5 +54,13 @@ public class Task {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }
