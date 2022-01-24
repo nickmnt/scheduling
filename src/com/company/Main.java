@@ -7,6 +7,16 @@ import java.util.Scanner;
 
 public class Main {
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
     public static void printStatus(PriorityQueue<Task> ready, Task running, int time) {
 
         System.out.println("State at t = " + time);
@@ -17,8 +27,9 @@ public class Main {
         }
         System.out.println("]");
         System.out.println("Running Task:");
-        System.out.println(String.format("    Task {name: %s, type: %s, state: %s, duration: %d}",
-                running.getName(), running.getType(), running.getState(), running.getDuration()));
+        System.out.println(ANSI_GREEN + String.format("    Task {name: %s, type: %s, state: %s, duration: %d}",
+                running.getName(), running.getType(), running.getState(), running.getDuration())
+                + ANSI_RESET);
         System.out.println("===");
     }
 
@@ -70,6 +81,41 @@ public class Main {
         }
     }
 
+    public static void roundRobin(Task[] tasks, int quantum) {
+        int newOrder = tasks.length;
+
+        PriorityQueue<Task> ready = new PriorityQueue<Task>(tasks.length, new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                return o1.getOrder() - o2.getOrder();
+            }
+        });
+
+        ready.addAll(Arrays.asList(tasks));
+
+        int t = 0;
+
+        while(!ready.isEmpty()) {
+            Task task = ready.poll();
+            task.setState(Task.RUNNING);
+            int initialDuration = task.getDuration();
+            int possibleRemaining = Math.max(0, initialDuration - quantum);
+            while(task.getDuration() != possibleRemaining) {
+                task.setDuration(task.getDuration()-1);
+                printStatus(ready, task, t);
+                t += 1;
+            }
+
+            if(task.getDuration() == 0) {
+                task.setState(Task.TERMINATED);
+            } else {
+                task.setOrder(newOrder);
+                newOrder += 1;
+                ready.add(task);
+            }
+        }
+    }
+
     public static void main(String[] args) {
         System.out.println("OS Scheduling project, Student# 9822762211");
         System.out.println("How many tasks?");
@@ -85,6 +131,7 @@ public class Main {
             tasks[i] = new Task(splittedInput[0], splittedInput[1], Integer.parseInt(splittedInput[2]), i);
         }
 //        sjf(tasks);
-        fcfs(tasks);
+//        fcfs(tasks);
+        roundRobin(tasks, 1);
     }
 }
