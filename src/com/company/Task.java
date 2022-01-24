@@ -10,6 +10,7 @@ public class Task {
     private int duration;
     private String state = READY;
     private int order;
+    private int timeWithCPU = 0;
 
     public Task(String name, String type, int duration) {
         this.name = name;
@@ -62,5 +63,13 @@ public class Task {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public int getTimeWithCPU() {
+        return timeWithCPU;
+    }
+
+    public void setTimeWithCPU(int timeWithCPU) {
+        this.timeWithCPU = timeWithCPU;
     }
 }

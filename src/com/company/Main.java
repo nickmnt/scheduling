@@ -22,13 +22,13 @@ public class Main {
         System.out.println("State at t = " + time);
         System.out.println("Ready Queue: [");
         for(Task t : ready) {
-            System.out.println(String.format("    Task {name: %s, type: %s, state: %s, duration: %d}",
-                    t.getName(), t.getType(), t.getState(), t.getDuration()));
+            System.out.println(String.format("    Task {name: %s, type: %s, state: %s, timeWithCpu: %d, duration: %d}",
+                    t.getName(), t.getType(), t.getState(), t.getTimeWithCPU(), t.getDuration()));
         }
         System.out.println("]");
         System.out.println("Running Task:");
-        System.out.println(ANSI_GREEN + String.format("    Task {name: %s, type: %s, state: %s, duration: %d}",
-                running.getName(), running.getType(), running.getState(), running.getDuration())
+        System.out.println(ANSI_GREEN + String.format("    Task {name: %s, type: %s, state: %s, timeWithCpu: %d, duration: %d}",
+                running.getName(), running.getType(), running.getState(), running.getTimeWithCPU(), running.getDuration())
                 + ANSI_RESET);
         System.out.println("===");
     }
@@ -50,6 +50,7 @@ public class Main {
             task.setState(Task.RUNNING);
             while(task.getDuration() != 0) {
                 task.setDuration(task.getDuration()-1);
+                task.setTimeWithCPU(task.getTimeWithCPU()+1);
                 printStatus(ready, task, t);
                 t += 1;
             }
@@ -74,6 +75,7 @@ public class Main {
             task.setState(Task.RUNNING);
             while(task.getDuration() != 0) {
                 task.setDuration(task.getDuration()-1);
+                task.setTimeWithCPU(task.getTimeWithCPU()+1);
                 printStatus(ready, task, t);
                 t += 1;
             }
@@ -102,6 +104,7 @@ public class Main {
             int possibleRemaining = Math.max(0, initialDuration - quantum);
             while(task.getDuration() != possibleRemaining) {
                 task.setDuration(task.getDuration()-1);
+                task.setTimeWithCPU(task.getTimeWithCPU()+1);
                 printStatus(ready, task, t);
                 t += 1;
             }
