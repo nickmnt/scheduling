@@ -1,9 +1,14 @@
 package com.company;
 
 public class Task {
+    public static final String RUNNING = "running";
+    public static final String READY = "ready";
+    public static final String TERMINATED = "terminated";
+
     private String name;
     private String type;
     private int duration;
+    private String state = READY;
 
     public Task(String name, String type, int duration) {
         this.name = name;
@@ -33,5 +38,13 @@ public class Task {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }
