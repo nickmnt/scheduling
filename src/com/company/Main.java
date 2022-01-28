@@ -123,8 +123,8 @@ public class Main {
         PriorityQueue<Task> ready = new PriorityQueue<Task>(100, new Comparator<Task>() {
             @Override
             public int compare(Task o1, Task o2) {
-                double x1 = (t + o1.getDuration()) * 1.0 / o1.getDuration();
-                double x2 = (t + o2.getDuration()) * 1.0 / o2.getDuration();
+                double x1 = (t - o1.getTimeWithCPU() + o1.getDuration()) * 1.0 / o1.getDuration();
+                double x2 = (t - o2.getTimeWithCPU() + o2.getDuration()) * 1.0 / o2.getDuration();
                 return Double.compare(x1, x2);
             }
         });
@@ -135,8 +135,6 @@ public class Main {
     }
 
     public static void hrrn(Task[] tasks) {
-        int newOrder = tasks.length;
-
         PriorityQueue<Task> ready = new PriorityQueue<Task>(tasks.length, new Comparator<Task>() {
             @Override
             public int compare(Task o1, Task o2) {
